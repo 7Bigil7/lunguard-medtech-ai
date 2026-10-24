@@ -3,6 +3,7 @@
 **Project:** LUNGUARD — Uncertainty-Aware Chest X-Ray Triage & Escalation Prototype  
 **Submission:** DEXATHON 2026 Round 2 (Software Project Prototype)  
 **Developer:** Bharath (Solo Front-End / Full-Stack Track)  
+**Team:** Bharath, Vivek, Harshitha, Ananya, Srishant  
 **Date:** October 23, 2026  
 **Status:** In Progress (Execution Wave 1)
 

@@ -4,7 +4,7 @@
 > **Submission Deadline:** October 28, 2026  
 > **Round 2 Requirement:** Front-End Interface Code (`frontend/`)  
 > **Developer:** Bharath (Solo Front-End / Full-Stack Track)  
-> **Team:** Bharath, Vivek, Harshitha, Ananya
+> **Team:** Bharath, Vivek, Harshitha, Ananya, Srishant
 
 ---
 

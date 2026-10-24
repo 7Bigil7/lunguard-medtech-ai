@@ -180,7 +180,7 @@ export const Header: React.FC = () => {
               </p>
               <div className="p-3 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 space-y-1">
                 <span className="font-semibold text-white block">Project Team:</span>
-                <p>Bharath, Vivek, Harshitha, Ananya</p>
+                <p>Bharath, Vivek, Harshitha, Ananya, Srishant</p>
               </div>
               <p className="text-[11px] text-slate-400">
                 Research Prototype Notice: This software is intended for research demonstration and decision-support exploration only. It is not an approved medical device.

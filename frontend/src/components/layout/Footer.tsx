@@ -32,7 +32,7 @@ export const Footer: React.FC = () => {
             <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block">
               DEXATHON 2026 PROTOTYPE DEVELOPMENT TEAM
             </span>
-            <div className="flex items-center justify-center space-x-2 text-xs font-semibold text-slate-200">
+            <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs font-semibold text-slate-200">
               <span>Bharath</span>
               <span className="text-cyan-500 font-bold">•</span>
               <span>Vivek</span>
@@ -40,6 +40,8 @@ export const Footer: React.FC = () => {
               <span>Harshitha</span>
               <span className="text-cyan-500 font-bold">•</span>
               <span>Ananya</span>
+              <span className="text-cyan-500 font-bold">•</span>
+              <span>Srishant</span>
             </div>
           </div>
 
