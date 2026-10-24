@@ -26,8 +26,35 @@ export const Landing: React.FC = () => {
     <div className="space-y-16 sm:space-y-24 pb-16">
       {/* HERO SECTION */}
       <section className="relative bg-slate-950 text-white overflow-hidden pt-12 pb-16 sm:pt-16 sm:pb-24 border-b border-slate-800">
-        {/* Subtle background ambient mesh */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-950/30 via-slate-950 to-slate-950 pointer-events-none" />
+        {/* Subtle background ambient mesh & medical energy waves */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-950/40 via-slate-950 to-slate-950 pointer-events-none" />
+        <svg
+          className="absolute inset-0 w-full h-full opacity-25 pointer-events-none"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 1440 600"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M-50 420C220 460 420 270 720 330C1020 390 1220 220 1500 290"
+            stroke="url(#hero-wave-grad)"
+            strokeWidth="2.5"
+          />
+          <path
+            d="M-50 380C260 430 480 300 780 350C1080 400 1280 250 1500 320"
+            stroke="url(#hero-wave-grad)"
+            strokeWidth="1.5"
+            strokeDasharray="6 6"
+          />
+          <defs>
+            <linearGradient id="hero-wave-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#06b6d4" stopOpacity="0" />
+              <stop offset="35%" stopColor="#06b6d4" stopOpacity="0.75" />
+              <stop offset="75%" stopColor="#3b82f6" stopOpacity="0.75" />
+              <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -122,8 +149,13 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* SECTION 1: CLINICAL CONTEXT & MOTIVATION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 overflow-hidden">
+        {/* Subtle decorative lung watermark */}
+        <div className="absolute right-0 -top-8 w-64 h-64 opacity-[0.06] pointer-events-none text-cyan-700 hidden lg:block">
+          <LungIcon size={256} />
+        </div>
+
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
           <div className="space-y-1">
             <span className="text-xs font-bold uppercase tracking-wider text-cyan-600 block">
               CLINICAL CONTEXT & MOTIVATION

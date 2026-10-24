@@ -37,93 +37,45 @@ export const HeroCxrCard: React.FC = () => {
         </div>
 
         {/* CXR Radiograph Viewport */}
-        <div className="relative aspect-[4/3] sm:aspect-[1.15/1] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center overflow-hidden">
-          {/* Anatomical CXR vector visualization */}
-          <svg
-            viewBox="0 0 400 360"
-            className="w-full h-full object-contain opacity-90 select-none"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* Soft background thoracic outline */}
-            <path
-              d="M100 70C60 110 50 200 65 290C90 320 160 325 200 325C240 325 310 320 335 290C350 200 340 110 300 70C270 45 220 40 200 40C180 40 130 45 100 70Z"
-              fill="#0A1124"
-              stroke="#1E293B"
-              strokeWidth="1.5"
-            />
+        <div className="relative aspect-[4/3] sm:aspect-[1.15/1] bg-slate-950 flex items-center justify-center overflow-hidden">
+          {/* Authentic Clinical Chest Radiograph */}
+          <img
+            src="/hero-cxr.jpg"
+            alt="Clinical chest X-ray radiograph"
+            className="w-full h-full object-cover scale-[1.08] select-none filter contrast-125 brightness-95"
+            draggable={false}
+          />
 
-            {/* Trachea & Main Bronchi */}
-            <path d="M200 30V130" stroke="#334155" strokeWidth="12" strokeLinecap="round" />
-            <path d="M200 130C180 150 150 165 120 180" stroke="#334155" strokeWidth="8" strokeLinecap="round" />
-            <path d="M200 130C220 150 250 165 280 180" stroke="#334155" strokeWidth="8" strokeLinecap="round" />
-
-            {/* Rib Cage Contours */}
-            <g stroke="#1E293B" strokeWidth="3" opacity="0.75" strokeLinecap="round">
-              <path d="M120 90C150 110 250 110 280 90" />
-              <path d="M105 120C140 145 260 145 295 120" />
-              <path d="M95 155C135 185 265 185 305 155" />
-              <path d="M90 195C130 225 270 225 310 195" />
-              <path d="M85 240C125 270 275 270 315 240" />
-              <path d="M85 280C125 305 275 305 315 280" />
-            </g>
-
-            {/* Bilateral Lung Radiopacity Fields */}
-            {/* Right Lung Field */}
-            <path
-              d="M190 110C160 100 110 115 95 160C85 200 80 260 100 295C130 305 175 290 185 260C190 220 190 160 190 110Z"
-              fill="#0F172A"
-              stroke="#38BDF8"
-              strokeWidth="0.75"
-              strokeDasharray="2 2"
-              opacity="0.4"
-            />
-            {/* Left Lung Field */}
-            <path
-              d="M210 110C240 100 290 115 305 160C315 200 320 260 300 295C270 305 225 290 215 260C210 220 210 160 210 110Z"
-              fill="#0F172A"
-              stroke="#38BDF8"
-              strokeWidth="0.75"
-              strokeDasharray="2 2"
-              opacity="0.4"
-            />
-
-            {/* Cardiac Silhouette (Center-Left) */}
-            <path
-              d="M185 190C170 220 180 280 240 280C260 280 270 260 265 240C260 210 230 190 200 185"
-              fill="#0F1E36"
-              stroke="#1E293B"
-              strokeWidth="2"
-              opacity="0.9"
-            />
-          </svg>
+          {/* Medical Monitor Cool-Blue Vignette & Atmosphere */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/30 pointer-events-none" />
+          <div className="absolute inset-0 ring-1 ring-inset ring-cyan-500/10 pointer-events-none" />
 
           {/* Attention Heatmaps & Bounding Boxes */}
           {showOverlays && (
             <>
-              {/* Hotspot 1: Right Upper Lobe (TB ?) */}
-              <div className="absolute top-[28%] left-[24%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none">
+              {/* Hotspot 1: Right Upper/Mid Lung Field (TB ?) */}
+              <div className="absolute top-[34%] left-[26%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none z-10">
                 {/* Yellow badge */}
-                <div className="px-2 py-0.5 rounded bg-amber-400 text-slate-950 text-[10px] font-extrabold tracking-wider shadow-md mb-1 animate-pulse">
+                <div className="px-2.5 py-0.5 rounded bg-amber-400 text-slate-950 text-[10px] font-black tracking-wider shadow-lg mb-1.5 animate-pulse">
                   TB ?
                 </div>
-                {/* Dashed Bounding Box with radiant yellow radial heatmap */}
-                <div className="w-20 h-20 rounded-xl border-2 border-dashed border-amber-400 relative flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-xl bg-amber-500/20 blur-md" />
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600 opacity-80 blur-sm mix-blend-screen" />
+                {/* Dashed Bounding Box with smooth radiant heatmap */}
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl border-2 border-dashed border-amber-400/90 relative flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-xl bg-amber-400/25 blur-md" />
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[radial-gradient(circle,_rgba(254,240,138,0.95)_0%,_rgba(245,158,11,0.85)_40%,_rgba(234,88,12,0.4)_70%,_transparent_100%)] blur-[2px] mix-blend-screen shadow-[0_0_30px_rgba(245,158,11,0.8)]" />
                 </div>
               </div>
 
-              {/* Hotspot 2: Left Mid-Zone (Malignancy ?) */}
-              <div className="absolute top-[48%] left-[64%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none">
+              {/* Hotspot 2: Left Mid Lung Zone (Malignancy ?) */}
+              <div className="absolute top-[38%] left-[63%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none z-10">
                 {/* Red badge */}
-                <div className="px-2 py-0.5 rounded bg-rose-600 text-white text-[10px] font-extrabold tracking-wider shadow-md mb-1 animate-pulse">
+                <div className="px-2.5 py-0.5 rounded bg-rose-600 text-white text-[10px] font-black tracking-wider shadow-lg mb-1.5 animate-pulse">
                   Malignancy ?
                 </div>
-                {/* Dashed Bounding Box with radiant red radial heatmap */}
-                <div className="w-24 h-24 rounded-xl border-2 border-dashed border-rose-500 relative flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-xl bg-rose-600/25 blur-md" />
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-r from-rose-500 via-red-600 to-rose-700 opacity-80 blur-sm mix-blend-screen" />
+                {/* Dashed Bounding Box with smooth radiant heatmap */}
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl border-2 border-dashed border-rose-500/90 relative flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-xl bg-rose-600/30 blur-md" />
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[radial-gradient(circle,_rgba(254,205,211,0.95)_0%,_rgba(244,63,94,0.85)_40%,_rgba(190,18,60,0.4)_70%,_transparent_100%)] blur-[2px] mix-blend-screen shadow-[0_0_35px_rgba(244,63,94,0.8)]" />
                 </div>
               </div>
             </>
