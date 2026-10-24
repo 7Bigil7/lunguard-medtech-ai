@@ -1,0 +1,53 @@
+{
+  "last_evaluated": null,
+  "is_measured": false,
+  "overall_metrics": {
+    "sensitivity_malignancy": null,
+    "specificity": null,
+    "precision": null,
+    "recall": null,
+    "f1_score": null,
+    "auroc": null,
+    "conformal_coverage": null,
+    "avg_prediction_set_size": null,
+    "abstention_rate": null
+  },
+  "per_dataset_metrics": [
+    {
+      "dataset_name": "NIH ChestX-ray14",
+      "sample_size": null,
+      "sensitivity_malignancy": null,
+      "specificity": null,
+      "coverage_conformal": null,
+      "abstention_rate": null,
+      "notes": "Pending label reconciliation for TB and mass/nodule co-occurrence."
+    },
+    {
+      "dataset_name": "Shenzhen TB Dataset",
+      "sample_size": null,
+      "sensitivity_malignancy": null,
+      "specificity": null,
+      "coverage_conformal": null,
+      "abstention_rate": null,
+      "notes": "TB positive cohort; malignancy labels not confirmed."
+    },
+    {
+      "dataset_name": "Montgomery County TB Set",
+      "sample_size": null,
+      "sensitivity_malignancy": null,
+      "specificity": null,
+      "coverage_conformal": null,
+      "abstention_rate": null,
+      "notes": "TB validation cohort; independent calibration split pending."
+    },
+    {
+      "dataset_name": "Stanford CheXpert",
+      "sample_size": null,
+      "sensitivity_malignancy": null,
+      "specificity": null,
+      "coverage_conformal": null,
+      "abstention_rate": null,
+      "notes": "Large multi-label chest radiograph set under evaluation."
+    }
+  ]
+}
