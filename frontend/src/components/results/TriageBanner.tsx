@@ -48,6 +48,13 @@ export const TriageBanner: React.FC<TriageBannerProps> = ({ triage, isSimulated 
           <p className="mt-3 text-sm text-emerald-900 leading-relaxed font-medium">
             No significant abnormality identified by the model. This result does not exclude disease and must be interpreted alongside clinical findings.
           </p>
+
+          <div className="mt-3.5 pt-3 border-t border-emerald-200/80 text-xs">
+            <span className="font-bold text-emerald-950 block">What this outcome means:</span>
+            <p className="text-emerald-900 mt-0.5 leading-relaxed">
+              Routine clinical correlation. No urgent algorithmic escalation is flagged; the patient continues along standard routine clinical evaluation based on physician judgment, without prescription of specific tests or treatments.
+            </p>
+          </div>
         </div>
       )
 
@@ -84,6 +91,13 @@ export const TriageBanner: React.FC<TriageBannerProps> = ({ triage, isSimulated 
           <p className="mt-3 text-sm text-amber-900 leading-relaxed font-medium">
             Findings may be consistent with tuberculosis. Clinical assessment and appropriate confirmatory testing are required.
           </p>
+
+          <div className="mt-3.5 pt-3 border-t border-amber-200/80 text-xs">
+            <span className="font-bold text-amber-950 block">What this outcome means:</span>
+            <p className="text-amber-900 mt-0.5 leading-relaxed">
+              Elevated risk workflow. Clinician is prompted to prioritize review of infectious symptoms and initiate facility infection-control protocols and clinical correlation, without prescribing specific diagnostic regimens.
+            </p>
+          </div>
         </div>
       )
 
@@ -120,6 +134,13 @@ export const TriageBanner: React.FC<TriageBannerProps> = ({ triage, isSimulated 
           <p className="mt-3 text-sm text-rose-900 leading-relaxed font-medium">
             Findings warrant further evaluation for possible malignancy. Prompt clinician review and appropriate diagnostic investigation are recommended.
           </p>
+
+          <div className="mt-3.5 pt-3 border-t border-rose-200/80 text-xs">
+            <span className="font-bold text-rose-950 block">What this outcome means:</span>
+            <p className="text-rose-900 mt-0.5 leading-relaxed">
+              High-risk escalation workflow. Clinician is prompted to expedite senior thoracic/radiological review to prevent diagnostic delay for suspicious solitary lesions or masses, without prescribing specific oncology regimens.
+            </p>
+          </div>
         </div>
       )
 
@@ -157,6 +178,13 @@ export const TriageBanner: React.FC<TriageBannerProps> = ({ triage, isSimulated 
           <p className="mt-3 text-sm text-purple-950 leading-relaxed font-medium">
             The model has not produced a sufficiently reliable classification under the configured safety policy. Review the prediction set and clinical context before determining the appropriate next steps.
           </p>
+
+          <div className="mt-3.5 pt-3 border-t border-purple-200/80 text-xs">
+            <span className="font-bold text-purple-950 block">What this outcome means:</span>
+            <p className="text-purple-900 mt-0.5 leading-relaxed">
+              Safety abstention workflow. The model explicitly withholds a unilateral classification because confident distinction is not statistically supported. The clinician is prompted to review full clinical history without premature diagnostic anchoring.
+            </p>
+          </div>
         </div>
       )
   }

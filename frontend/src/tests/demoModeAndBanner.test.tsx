@@ -26,7 +26,7 @@ describe('DemoModeBanner & App Mode States', () => {
     expect(screen.getByRole('alert', { name: /Simulation Mode Banner/i })).toBeInTheDocument()
     expect(
       screen.getByText(
-        'SIMULATED DEMO MODE. Results below are scripted examples, not real AI inference on your image.'
+        'SIMULATED DEMO MODE. Results are scripted examples, not real AI inference on your image.'
       )
     ).toBeInTheDocument()
     expect(screen.getByText(/Select simulated scenario:/i)).toBeInTheDocument()

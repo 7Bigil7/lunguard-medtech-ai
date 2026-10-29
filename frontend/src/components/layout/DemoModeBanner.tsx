@@ -31,7 +31,7 @@ export const DemoModeBanner: React.FC = () => {
             SIMULATED DEMO MODE
           </span>
           <span className="font-semibold text-slate-950">
-            SIMULATED DEMO MODE. Results below are scripted examples, not real AI inference on your image.
+            SIMULATED DEMO MODE. Results are scripted examples, not real AI inference on your image.
           </span>
         </div>
 

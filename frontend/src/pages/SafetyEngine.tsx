@@ -6,6 +6,7 @@ import {
   Layers,
   Sparkles,
 } from 'lucide-react'
+import { SafetyPolicyExplorer } from '../components/safety/SafetyPolicyExplorer'
 
 export const SafetyEngine: React.FC = () => {
   return (
@@ -136,6 +137,9 @@ export const SafetyEngine: React.FC = () => {
           </svg>
         </div>
       </section>
+
+      {/* Interactive Demonstration: Safety Policy Explorer */}
+      <SafetyPolicyExplorer />
 
       {/* Explanatory Deep-Dive Sections */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

@@ -28,11 +28,19 @@ export const ConformalSetPanel: React.FC<ConformalSetPanelProps> = ({ conformal 
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
-        <div className="flex items-center space-x-2">
-          <Layers className="w-5 h-5 text-teal-600" />
-          <h3 className="text-base font-bold text-slate-900 tracking-tight">
-            Conformal Prediction Set
-          </h3>
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-teal-700 block">
+            Concept 2 of 3: Statistical Layer
+          </span>
+          <div className="flex items-center space-x-2">
+            <Layers className="w-5 h-5 text-teal-600" />
+            <h3 className="text-base font-bold text-slate-900 tracking-tight">
+              Conformal Prediction Set
+            </h3>
+            <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-400 text-slate-950 border border-amber-500 shadow-xs">
+              SIMULATED
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center space-x-2 text-xs">

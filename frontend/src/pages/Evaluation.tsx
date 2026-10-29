@@ -248,6 +248,175 @@ export const Evaluation: React.FC = () => {
         </div>
       </section>
 
+      {/* Concept Explainer: Demonstration vs. Validated Evaluation */}
+      <section className="bg-slate-900 text-white p-6 sm:p-8 rounded-2xl border border-slate-800 shadow-md space-y-6">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-wider text-teal-400 block">
+            Methodological Transparency
+          </span>
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white mt-1">
+            Demonstration vs. Validated Evaluation: What Clinical Proof Requires
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-3xl leading-relaxed">
+            In competitive medtech hackathons, it is common to conflate interactive code demonstrations with verified clinical performance. LUNGUARD explicitly separates prototype engineering from formal clinical evaluation.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+          <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700 space-y-2">
+            <span className="font-bold text-teal-300 block text-sm">1. Labeled Held-Out Test Cohort</span>
+            <p className="text-slate-300 leading-relaxed">
+              Must use an independent test cohort never seen during model training, hyperparameter tuning, or conformal threshold selection.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700 space-y-2">
+            <span className="font-bold text-teal-300 block text-sm">2. Independent Calibration Split</span>
+            <p className="text-slate-300 leading-relaxed">
+              Conformal prediction guarantees mathematically require a separate calibration split (D_cal) strictly disjoint from the evaluation set (D_test).
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700 space-y-2">
+            <span className="font-bold text-teal-300 block text-sm">3. Patient-Level Separation</span>
+            <p className="text-slate-300 leading-relaxed">
+              Hospital admissions often take serial X-rays of the same patient. Splitting randomly by image causes severe data leakage; splits must occur strictly at the patient ID level.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700 space-y-2">
+            <span className="font-bold text-teal-300 block text-sm">4. Multi-Center Subgroup Analysis</span>
+            <p className="text-slate-300 leading-relaxed">
+              Evaluating performance across distinct hospital systems, scanner manufacturers (GE, Siemens, Philips), pediatric/adult populations, and disease prevalence levels.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700 space-y-2">
+            <span className="font-bold text-teal-300 block text-sm">5. Independent Radiologist Multi-Reader</span>
+            <p className="text-slate-300 leading-relaxed">
+              Multi-reader multi-case (MRMC) study measuring whether LUNGUARD&apos;s safety abstentions reduce actual diagnostic anchoring without imposing prohibitive review overhead.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-teal-950/60 border border-teal-700/60 space-y-2">
+            <span className="font-bold text-teal-200 block text-sm">Current Submission Status</span>
+            <p className="text-teal-100 leading-relaxed">
+              Round 2 presents a working software prototype and deterministic safety policy. Rigorous clinical validation on multi-center data remains planned and unverified.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Illustrative Toy Concept Section: Clearly Watermarked */}
+      <section className="bg-white p-6 sm:p-8 rounded-2xl border-2 border-dashed border-amber-300 shadow-sm space-y-6 relative overflow-hidden">
+        {/* Prominent Diagonal Watermark */}
+        <div className="absolute top-3 right-3 sm:top-5 sm:right-5">
+          <span className="px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-amber-400 text-slate-950 border border-amber-500 shadow-sm uppercase tracking-wider">
+            ILLUSTRATIVE EXAMPLE (synthetic data, not model results)
+          </span>
+        </div>
+
+        <div>
+          <span className="text-xs font-bold uppercase tracking-wider text-amber-700 block">
+            Pedagogical Concept Visualization
+          </span>
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 mt-1">
+            Understanding the Conformal Coverage vs. Abstention Trade-off
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-3xl leading-relaxed">
+            The toy visualization below explains how tuning the target coverage level (1 - α) impacts prediction set size and safety policy abstention rates. <strong>These figures are hand-crafted pedagogical illustrations to demonstrate theoretical dynamics, NOT real model evaluation results.</strong>
+          </p>
+        </div>
+
+        {/* Toy Comparison Table / Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+          {/* Tier 1 */}
+          <div className="p-4 rounded-xl bg-amber-50/60 border border-amber-200 space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-amber-200">
+              <span className="font-bold text-slate-900 text-sm">Toy α = 0.10</span>
+              <span className="text-xs font-mono font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded">
+                90% Target Coverage
+              </span>
+            </div>
+            <div className="space-y-1.5 text-xs text-slate-700 font-mono">
+              <div className="flex justify-between">
+                <span>Toy Avg Set Size:</span>
+                <span className="font-bold">1.12 classes</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Toy Multi-Class Sets:</span>
+                <span className="font-bold">11%</span>
+              </div>
+              <div className="flex justify-between text-purple-900 font-bold">
+                <span>Toy Abstention Rate:</span>
+                <span>14%</span>
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-tight pt-1">
+              Narrower sets produce fewer abstentions, but higher risk that true diagnosis lies outside the set (10% nominal error rate).
+            </p>
+          </div>
+
+          {/* Tier 2 */}
+          <div className="p-4 rounded-xl bg-amber-100/60 border-2 border-amber-400 space-y-3 ring-1 ring-amber-300">
+            <div className="flex items-center justify-between pb-2 border-b border-amber-300">
+              <span className="font-bold text-slate-900 text-sm">Toy α = 0.05 (Default)</span>
+              <span className="text-xs font-mono font-bold bg-amber-300 text-amber-950 px-2 py-0.5 rounded">
+                95% Target Coverage
+              </span>
+            </div>
+            <div className="space-y-1.5 text-xs text-slate-700 font-mono">
+              <div className="flex justify-between">
+                <span>Toy Avg Set Size:</span>
+                <span className="font-bold">1.48 classes</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Toy Multi-Class Sets:</span>
+                <span className="font-bold">26%</span>
+              </div>
+              <div className="flex justify-between text-purple-900 font-bold">
+                <span>Toy Abstention Rate:</span>
+                <span>31%</span>
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-700 leading-tight pt-1 font-medium">
+              Balanced configuration: 95% marginal coverage with moderate abstention margin routed to multi-disciplinary review.
+            </p>
+          </div>
+
+          {/* Tier 3 */}
+          <div className="p-4 rounded-xl bg-amber-50/60 border border-amber-200 space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-amber-200">
+              <span className="font-bold text-slate-900 text-sm">Toy α = 0.01</span>
+              <span className="text-xs font-mono font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded">
+                99% Target Coverage
+              </span>
+            </div>
+            <div className="space-y-1.5 text-xs text-slate-700 font-mono">
+              <div className="flex justify-between">
+                <span>Toy Avg Set Size:</span>
+                <span className="font-bold">2.35 classes</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Toy Multi-Class Sets:</span>
+                <span className="font-bold">61%</span>
+              </div>
+              <div className="flex justify-between text-purple-900 font-bold">
+                <span>Toy Abstention Rate:</span>
+                <span>68%</span>
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-tight pt-1">
+              Extremely conservative: near-zero miss rate, but sets balloon to multi-class ambiguity and abstention rate becomes clinically burdensome.
+            </p>
+          </div>
+        </div>
+
+        <div className="p-3 bg-amber-50 border border-amber-300 rounded-lg text-center text-xs text-amber-900 font-medium">
+          Note: This toy demonstration illustrates mathematical trade-offs only. LUNGUARD displays &quot;Not yet measured&quot; on all genuine performance benchmark slots.
+        </div>
+      </section>
+
       {/* What Remains to be Tested Checklist */}
       <section className="bg-white p-6 sm:p-8 rounded-xl border border-slate-200 shadow-sm space-y-6">
         <div className="flex items-center space-x-2">

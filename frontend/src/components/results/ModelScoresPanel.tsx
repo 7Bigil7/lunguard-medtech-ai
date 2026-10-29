@@ -34,21 +34,29 @@ export const ModelScoresPanel: React.FC<ModelScoresPanelProps> = ({ model }) => 
     <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
         <div>
-          <h3 className="text-base font-bold text-slate-900 tracking-tight">
-            Model output scores
+          <span className="text-[10px] font-bold uppercase tracking-wider text-teal-700 block">
+            Concept 1 of 3: Raw Model Output
+          </span>
+          <h3 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+            Simulated model output scores (illustrative, not calibrated probabilities)
           </h3>
           <p className="text-xs text-slate-500">Backbone: {name}</p>
         </div>
 
-        <span
-          className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold border ${
-            calibrated
-              ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-              : 'bg-amber-50 text-amber-800 border-amber-300'
-          }`}
-        >
-          {calibrated ? 'Calibrated Probabilities' : 'Raw Model Scores (Uncalibrated)'}
-        </span>
+        <div className="flex items-center space-x-1.5 shrink-0">
+          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-400 text-slate-950 border border-amber-500 shadow-xs">
+            SIMULATED
+          </span>
+          <span
+            className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold border ${
+              calibrated
+                ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                : 'bg-slate-100 text-slate-700 border-slate-300'
+            }`}
+          >
+            {calibrated ? 'Calibrated' : 'Uncalibrated Logits'}
+          </span>
+        </div>
       </div>
 
       {/* Warning / Note on calibration */}

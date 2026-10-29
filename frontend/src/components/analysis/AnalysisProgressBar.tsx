@@ -7,10 +7,12 @@ interface AnalysisProgressBarProps {
 }
 
 const STAGES = [
-  'Preprocessing & Normalization (224×224)',
-  'DenseNet-121 Feature Extraction',
-  'Conformal Prediction Set Construction (α = 0.05)',
-  'Safety Policy Rule Evaluation',
+  '1. Validate: Magic bytes & dimensions',
+  '2. Preprocess: 224×224 Normalization',
+  '3. Model scores: Feature extraction logits',
+  '4. Conformal prediction set: C(X) @ 95%',
+  '5. Safety policy: Rule evaluation',
+  '6. Triage: Clinical routing outcome',
 ]
 
 export const AnalysisProgressBar: React.FC<AnalysisProgressBarProps> = ({
@@ -24,7 +26,7 @@ export const AnalysisProgressBar: React.FC<AnalysisProgressBarProps> = ({
 
     const interval = setInterval(() => {
       setCurrentStageIndex((prev) => (prev < STAGES.length - 1 ? prev + 1 : prev))
-    }, 300)
+    }, 140)
 
     return () => {
       clearInterval(interval)

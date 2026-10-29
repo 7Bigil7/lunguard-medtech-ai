@@ -12,13 +12,23 @@ export const SafetyPolicyPanel: React.FC<SafetyPolicyPanelProps> = ({ policy }) 
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
-        <div className="flex items-center space-x-2">
-          <Shield className="w-5 h-5 text-teal-600" />
-          <div>
-            <h3 className="text-base font-bold text-slate-900 tracking-tight">
-              Safety-Policy Decision Panel
-            </h3>
-            <p className="text-xs text-slate-500">Configured Policy Engine: {version}</p>
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-teal-700 block">
+            Concept 3 of 3: Safety Guardrail
+          </span>
+          <div className="flex items-center space-x-2">
+            <Shield className="w-5 h-5 text-teal-600" />
+            <div>
+              <div className="flex items-center space-x-2">
+                <h3 className="text-base font-bold text-slate-900 tracking-tight">
+                  Safety-Policy Decision Panel
+                </h3>
+                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-400 text-slate-950 border border-amber-500 shadow-xs">
+                  SIMULATED
+                </span>
+              </div>
+              <p className="text-xs text-slate-500">Configured Policy Engine: {version}</p>
+            </div>
           </div>
         </div>
 

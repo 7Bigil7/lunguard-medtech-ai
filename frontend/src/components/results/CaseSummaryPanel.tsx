@@ -71,6 +71,11 @@ Lunguard is a research prototype intended to demonstrate uncertainty-aware chest
             <h3 className="text-base font-bold text-slate-900 tracking-tight">
               Clinical Case Summary & Guidance
             </h3>
+            {response.simulated && (
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-400 text-slate-950 border border-amber-500 shadow-xs">
+                SIMULATED SUMMARY
+              </span>
+            )}
           </div>
           <div className="flex items-center space-x-2 text-xs text-slate-500 mt-0.5">
             <span>Case ID: <strong className="text-slate-800 font-mono">{response.case_id}</strong></span>

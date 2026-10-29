@@ -9,20 +9,22 @@ import { ConformalSetPanel } from '../components/results/ConformalSetPanel'
 import { SafetyPolicyPanel } from '../components/results/SafetyPolicyPanel'
 import { GradCamViewer } from '../components/results/GradCamViewer'
 import { CaseSummaryPanel } from '../components/results/CaseSummaryPanel'
+import { AllScenariosModal } from '../components/results/AllScenariosModal'
 import { simulateAnalysis } from '../services/demoSimulator'
 import { analyzeImageLive, ApiServiceError } from '../services/apiClient'
-import type { AnalysisResponse } from '../types/api'
-import { FlaskConical, AlertCircle, Activity, ArrowRight } from 'lucide-react'
+import type { AnalysisResponse, TriageOutcome } from '../types/api'
+import { FlaskConical, AlertCircle, Activity, ArrowRight, Grid3X3, Check } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export const Workspace: React.FC = () => {
-  const { mode, simulatedScenario, enterDemoMode } = useApp()
+  const { mode, simulatedScenario, setSimulatedScenario, enterDemoMode } = useApp()
 
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResponse | null>(null)
   const [activeImageObjectUrl, setActiveImageObjectUrl] = useState<string | null>(null)
   const [activeFile, setActiveFile] = useState<File | null>(null)
   const [activeCaseLabel, setActiveCaseLabel] = useState<string | undefined>(undefined)
+  const [showComparisonModal, setShowComparisonModal] = useState<boolean>(false)
 
   const [apiError, setApiError] = useState<{ code?: string; message: string } | null>(null)
 
@@ -167,6 +169,94 @@ export const Workspace: React.FC = () => {
         </div>
       </div>
 
+      {/* Presenter Scenario Selector (when in Demo Mode) */}
+      {mode === 'demo' && (
+        <section aria-labelledby="presenter-scenario-heading" className="bg-amber-50 border border-amber-300 rounded-xl p-4 sm:p-5 shadow-xs space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-amber-200">
+            <div className="flex items-center space-x-2">
+              <FlaskConical className="w-5 h-5 text-amber-700" />
+              <h2 id="presenter-scenario-heading" className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+                Presenter: choose simulated scenario
+              </h2>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowComparisonModal(true)}
+              className="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+            >
+              <Grid3X3 className="w-3.5 h-3.5 mr-1.5 text-teal-400" />
+              Compare All 4 Scenarios Side-by-Side
+            </button>
+          </div>
+
+          <p className="text-xs text-slate-700">
+            Select one of the four clinical triage workflows below. Clicking <strong>&quot;Analyze X-ray&quot;</strong> executes a deterministic simulated pipeline (Validate → Preprocess → Model scores → Conformal prediction set → Safety policy → Triage).
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            {[
+              {
+                id: 'NORMAL' as TriageOutcome,
+                title: 'a. NORMAL',
+                sub: 'Lower apparent risk',
+                desc: 'Routine correlation, standard clinical pathway.',
+                activeBg: 'bg-emerald-600 text-white ring-2 ring-emerald-500',
+              },
+              {
+                id: 'TB_CONSISTENT' as TriageOutcome,
+                title: 'b. TB-CONSISTENT',
+                sub: 'Elevated infectious risk',
+                desc: 'Infectious risk workflow & sputum/molecular correlation.',
+                activeBg: 'bg-amber-600 text-white ring-2 ring-amber-500',
+              },
+              {
+                id: 'MALIGNANCY_SUSPICIOUS' as TriageOutcome,
+                title: 'c. MALIGNANCY-SUSPICIOUS',
+                sub: 'High-risk escalation',
+                desc: 'Expedited senior thoracic review & staging workup.',
+                activeBg: 'bg-rose-600 text-white ring-2 ring-rose-500',
+              },
+              {
+                id: 'UNCERTAIN_DUAL_RISK' as TriageOutcome,
+                title: 'd. UNCERTAIN / DUAL-RISK',
+                sub: 'Uncertain or conflicting findings',
+                desc: 'Key focus: Safety policy abstention to prevent diagnostic anchoring.',
+                activeBg: 'bg-purple-700 text-white ring-2 ring-purple-600',
+              },
+            ].map((opt) => {
+              const isSelected = simulatedScenario === opt.id
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setSimulatedScenario(opt.id)}
+                  className={`text-left p-3 rounded-lg border transition-all flex flex-col justify-between cursor-pointer ${
+                    isSelected
+                      ? opt.activeBg
+                      : 'bg-white hover:bg-amber-100/60 text-slate-900 border-amber-200'
+                  }`}
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-xs">{opt.title}</span>
+                      {isSelected && <Check className="w-4 h-4 shrink-0" />}
+                    </div>
+                    <span className={`text-[11px] font-medium block ${isSelected ? 'text-white/90' : 'text-slate-600'}`}>
+                      {opt.sub}
+                    </span>
+                  </div>
+                  <p className={`text-[10px] mt-2 pt-1 border-t leading-snug ${
+                    isSelected ? 'border-white/20 text-white/80' : 'border-slate-100 text-slate-500'
+                  }`}>
+                    {opt.desc}
+                  </p>
+                </button>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
       {/* Upload and Intake Section */}
       <section aria-labelledby="intake-heading">
         <h2 id="intake-heading" className="sr-only">Image Intake & Client Validation</h2>
@@ -269,6 +359,13 @@ export const Workspace: React.FC = () => {
           </div>
         </section>
       )}
+
+      {/* Side-by-Side Comparison Modal for Presenter */}
+      <AllScenariosModal
+        isOpen={showComparisonModal}
+        onClose={() => setShowComparisonModal(false)}
+        onSelectScenario={(sc) => setSimulatedScenario(sc)}
+      />
     </div>
   )
 }

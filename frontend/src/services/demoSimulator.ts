@@ -1,12 +1,12 @@
-import type { AnalysisResponse, TriageOutcome } from '../types/api'
+import type { AnalysisResponse, TriageOutcome, PredictionClass } from '../types/api'
+import { evaluateSafetyPolicy } from '../lib/safetyPolicy'
 
-// Deterministic 1x1 or small valid PNG base64 strings for tests and environments without DOM canvas
-// A valid 64x64 PNG gradient heatmap encoded as base64
+// Deterministic valid PNG base64 strings for tests and environments without DOM canvas
 const FALLBACK_HEATMAP_BASE64 =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAClJREFUKFNj/M/A8J+BAsD4nxjAxsDA8B+bICaBv//+M6I4Yd48Bv7/DAwA+8UQO0h05O8AAAAASUVORK5CYII='
 
 /**
- * Creates a synthetic radial gradient heatmap as a data URL
+ * Creates a deterministic synthetic radial gradient heatmap as a data URL
  */
 function createSyntheticHeatmapDataUrl(scenario: TriageOutcome): string {
   if (typeof document === 'undefined') {
@@ -25,27 +25,26 @@ function createSyntheticHeatmapDataUrl(scenario: TriageOutcome): string {
 
     let cx = 128
     let cy = 128
-    let r1 = 10
+    const r1 = 10
     let r2 = 90
 
-    // Vary hot spots based on simulated disease location
     if (scenario === 'TB_CONSISTENT') {
-      // Right upper lobe apical consolidation
+      // Right upper lobe apical consolidation hotspot
       cx = 175
       cy = 70
       r2 = 80
     } else if (scenario === 'MALIGNANCY_SUSPICIOUS') {
-      // Left mid-lung focal mass
+      // Left mid-lung focal mass hotspot
       cx = 85
       cy = 130
       r2 = 70
     } else if (scenario === 'UNCERTAIN_DUAL_RISK') {
       // Dual foci: right upper lobe + left hilar fullness
       const grad1 = ctx.createRadialGradient(170, 75, 5, 170, 75, 75)
-      grad1.addColorStop(0, 'rgba(239, 68, 68, 0.85)') // Red
-      grad1.addColorStop(0.4, 'rgba(249, 115, 22, 0.65)') // Orange
-      grad1.addColorStop(0.7, 'rgba(234, 179, 8, 0.4)') // Yellow
-      grad1.addColorStop(1, 'rgba(59, 130, 246, 0)') // Fade out
+      grad1.addColorStop(0, 'rgba(239, 68, 68, 0.85)')
+      grad1.addColorStop(0.4, 'rgba(249, 115, 22, 0.65)')
+      grad1.addColorStop(0.7, 'rgba(234, 179, 8, 0.4)')
+      grad1.addColorStop(1, 'rgba(59, 130, 246, 0)')
 
       ctx.fillStyle = grad1
       ctx.beginPath()
@@ -88,217 +87,143 @@ function createSyntheticHeatmapDataUrl(scenario: TriageOutcome): string {
 export interface ScenarioDefinition {
   id: TriageOutcome
   label: string
+  workflowMeaning: string
   description: string
   response: AnalysisResponse
 }
 
-export function getSimulatedScenarioResponse(scenario: TriageOutcome, caseLabel?: string): AnalysisResponse {
-  const timestamp = new Date().toISOString()
-  const randomSuffix = Math.floor(1000 + Math.random() * 9000)
-  const caseId = caseLabel && caseLabel.trim().length > 0
-    ? `SIM-${caseLabel.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '')}-${randomSuffix}`
-    : `SIM-CXR-${randomSuffix}`
+export const SCENARIO_METADATA: Record<TriageOutcome, { label: string; code: string; workflowMeaning: string }> = {
+  NORMAL: {
+    label: 'Normal (Lower Apparent Risk)',
+    code: 'SIM-CASE-NORMAL-101',
+    workflowMeaning:
+      'Routine clinical correlation. No urgent algorithmic escalation is flagged; patient remains on standard clinical pathway according to examining clinician judgment.',
+  },
+  TB_CONSISTENT: {
+    label: 'TB-Consistent (Elevated Risk)',
+    code: 'SIM-CASE-TB-202',
+    workflowMeaning:
+      'Elevated infectious risk workflow. Prioritize patient for clinical evaluation, history review, sputum/molecular testing protocols, and standard infection-control procedures.',
+  },
+  MALIGNANCY_SUSPICIOUS: {
+    label: 'Malignancy-Suspicious (High-Risk Escalation)',
+    code: 'SIM-CASE-MALIGNANCY-303',
+    workflowMeaning:
+      'High-risk thoracic escalation. Fast-track case for prompt senior radiologist/pulmonologist review and diagnostic staging workup to avoid diagnostic delay.',
+  },
+  UNCERTAIN_DUAL_RISK: {
+    label: 'Uncertain / Dual-Risk (Safety Abstention)',
+    code: 'SIM-CASE-UNCERTAIN-404',
+    workflowMeaning:
+      'Algorithmic abstention & multi-disciplinary review. Neither category can be safely ruled out or prioritized without risk of diagnostic anchoring. Mandates prompt clinician assessment without reliance on automated scoring.',
+  },
+}
 
+/**
+ * Deterministically constructs simulated response for a scenario.
+ * Same scenario always produces the exact same deterministic scores, conformal sets, and triage output.
+ */
+export function getSimulatedScenarioResponse(scenario: TriageOutcome, caseLabel?: string): AnalysisResponse {
+  const meta = SCENARIO_METADATA[scenario]
+  const caseId = caseLabel && caseLabel.trim().length > 0
+    ? `SIM-${caseLabel.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '')}-${scenario.slice(0, 3)}`
+    : meta.code
+
+  const timestamp = '2026-10-27T12:00:00.000Z'
   const heatmapBase64 = createSyntheticHeatmapDataUrl(scenario)
+
+  let scores = { normal: 0.94, tb_consistent: 0.04, malignancy_suspicious: 0.02 }
+  let predictionSet: PredictionClass[] = ['normal']
+  let limitations: string[] = []
 
   switch (scenario) {
     case 'NORMAL':
-      return {
-        case_id: caseId,
-        status: 'completed',
-        mode: 'simulated',
-        simulated: true,
-        timestamp,
-        model: {
-          name: 'DenseNet-121-CXR-v1.0 (Simulated)',
-          scores: {
-            normal: 0.94,
-            tb_consistent: 0.04,
-            malignancy_suspicious: 0.02,
-          },
-          calibrated: false,
-        },
-        conformal: {
-          prediction_set: ['normal'],
-          target_coverage: 0.95,
-          method: 'split_conformal_lac',
-        },
-        safety_policy: {
-          version: 'v1.2-conservative',
-          abstained: false,
-          triggered_rules: ['RULE_NORMAL_THRESHOLD_SATISFIED'],
-          reasons: [
-            'Conformal prediction set contains exclusively the normal classification.',
-            'Model output scores meet conservative clearance threshold.',
-          ],
-        },
-        triage: 'NORMAL',
-        explainability: {
-          available: true,
-          method: 'gradcam',
-          heatmap_png_base64: heatmapBase64,
-          note: 'Illustrative placeholder, not derived from the uploaded image.',
-        },
-        limitations: [
-          'SIMULATED DEMO: Synthetic data for demonstration purposes only.',
-          'Normal output does not exclude micro-nodules or early-stage pathology below CXR resolution.',
-          'Model was trained on adult retrospective CXR datasets; pediatric evaluation is pending.',
-        ],
-      }
+      scores = { normal: 0.94, tb_consistent: 0.04, malignancy_suspicious: 0.02 }
+      predictionSet = ['normal']
+      limitations = [
+        'SIMULATED DEMO: Scripted example demonstrating non-pathological clearance.',
+        'Normal output does not exclude micro-nodules or early-stage pathology below CXR resolution.',
+        'Simulated scores are illustrative model outputs, not calibrated clinical probabilities.',
+      ]
+      break
 
     case 'TB_CONSISTENT':
-      return {
-        case_id: caseId,
-        status: 'completed',
-        mode: 'simulated',
-        simulated: true,
-        timestamp,
-        model: {
-          name: 'DenseNet-121-CXR-v1.0 (Simulated)',
-          scores: {
-            normal: 0.07,
-            tb_consistent: 0.89,
-            malignancy_suspicious: 0.04,
-          },
-          calibrated: false,
-        },
-        conformal: {
-          prediction_set: ['tb_consistent'],
-          target_coverage: 0.95,
-          method: 'split_conformal_lac',
-        },
-        safety_policy: {
-          version: 'v1.2-conservative',
-          abstained: false,
-          triggered_rules: ['RULE_SINGLE_INFECTIOUS_CONCORDANCE'],
-          reasons: [
-            'Upper lobe fibrocavitary / infiltrative profile identified.',
-            'Malignancy confidence is below safety escalation boundary.',
-          ],
-        },
-        triage: 'TB_CONSISTENT',
-        explainability: {
-          available: true,
-          method: 'gradcam',
-          heatmap_png_base64: heatmapBase64,
-          note: 'Illustrative placeholder, not derived from the uploaded image.',
-        },
-        limitations: [
-          'SIMULATED DEMO: Scripted scenario simulating TB concordance.',
-          'Radiological findings of TB can mimic chronic fungal infection or sarcoidosis.',
-          'Confirmatory microbiological and clinical correlation is required.',
-        ],
-      }
+      scores = { normal: 0.07, tb_consistent: 0.89, malignancy_suspicious: 0.04 }
+      predictionSet = ['tb_consistent']
+      limitations = [
+        'SIMULATED DEMO: Scripted scenario simulating TB concordance without malignancy overlap.',
+        'Radiological findings of TB can mimic chronic fungal infection or sarcoidosis.',
+        'Confirmatory microbiological and clinical correlation is required.',
+      ]
+      break
 
     case 'MALIGNANCY_SUSPICIOUS':
-      return {
-        case_id: caseId,
-        status: 'completed',
-        mode: 'simulated',
-        simulated: true,
-        timestamp,
-        model: {
-          name: 'DenseNet-121-CXR-v1.0 (Simulated)',
-          scores: {
-            normal: 0.03,
-            tb_consistent: 0.05,
-            malignancy_suspicious: 0.92,
-          },
-          conformal: {
-            prediction_set: ['malignancy_suspicious'],
-            target_coverage: 0.95,
-            method: 'split_conformal_lac',
-          },
-          calibrated: false,
-        },
-        conformal: {
-          prediction_set: ['malignancy_suspicious'],
-          target_coverage: 0.95,
-          method: 'split_conformal_lac',
-        },
-        safety_policy: {
-          version: 'v1.2-conservative',
-          abstained: false,
-          triggered_rules: ['RULE_HIGH_CONFIDENCE_MALIGNANCY_TRIGGER'],
-          reasons: [
-            'Focal opacity with spiculation features detected.',
-            'Safety policy mandates high-priority escalation for pulmonary mass evaluation.',
-          ],
-        },
-        triage: 'MALIGNANCY_SUSPICIOUS',
-        explainability: {
-          available: true,
-          method: 'gradcam',
-          heatmap_png_base64: heatmapBase64,
-          note: 'Illustrative placeholder, not derived from the uploaded image.',
-        },
-        limitations: [
-          'SIMULATED DEMO: Scripted scenario simulating neoplastic suspicion.',
-          'CXR has low specificity for distinguishing benign tuberculomas from malignant nodules.',
-          'Diagnostic confirmation requires tissue histology and staging imaging.',
-        ],
-      }
+      scores = { normal: 0.03, tb_consistent: 0.05, malignancy_suspicious: 0.92 }
+      predictionSet = ['malignancy_suspicious']
+      limitations = [
+        'SIMULATED DEMO: Scripted scenario simulating high-risk neoplastic suspicion.',
+        'CXR has low specificity for distinguishing benign tuberculomas from malignant nodules.',
+        'Diagnostic confirmation requires tissue histology and staging imaging.',
+      ]
+      break
 
     case 'UNCERTAIN_DUAL_RISK':
     default:
-      return {
-        case_id: caseId,
-        status: 'completed',
-        mode: 'simulated',
-        simulated: true,
-        timestamp,
-        model: {
-          name: 'DenseNet-121-CXR-v1.0 (Simulated)',
-          scores: {
-            normal: 0.08,
-            tb_consistent: 0.74,
-            malignancy_suspicious: 0.71,
-          },
-          calibrated: false,
-        },
-        conformal: {
-          prediction_set: ['tb_consistent', 'malignancy_suspicious'],
-          target_coverage: 0.95,
-          method: 'split_conformal_lac',
-        },
-        safety_policy: {
-          version: 'v1.2-conservative',
-          abstained: true,
-          triggered_rules: [
-            'RULE_MULTI_CLASS_HIGH_RISK_OVERLAP',
-            'RULE_MALIGNANCY_SENSITIVITY_THRESHOLD',
-            'RULE_SAFETY_ABSTENTION_ENFORCED',
-          ],
-          reasons: [
-            'Conformal prediction set contains both TB-consistent and Malignancy-suspicious classes with overlapping confidence margins.',
-            'Safety policy triggered abstention to protect against diagnostic anchoring in a TB-endemic clinical presentation.',
-          ],
-        },
-        triage: 'UNCERTAIN_DUAL_RISK',
-        explainability: {
-          available: true,
-          method: 'gradcam',
-          heatmap_png_base64: heatmapBase64,
-          note: 'Illustrative placeholder, not derived from the uploaded image.',
-        },
-        limitations: [
-          'SIMULATED DEMO: Primary prototype differentiator demonstrating safety abstention.',
-          'Uncertainty does not imply simultaneous dual disease; it indicates the model cannot safely differentiate.',
-          'Conformal coverage guarantee holds only under valid calibration and exchangeability assumptions.',
-        ],
-      }
+      scores = { normal: 0.08, tb_consistent: 0.74, malignancy_suspicious: 0.71 }
+      predictionSet = ['tb_consistent', 'malignancy_suspicious']
+      limitations = [
+        'SIMULATED DEMO: Key hackathon differentiator demonstrating safety policy abstention.',
+        'Uncertainty does not imply simultaneous dual disease; it indicates the model cannot safely differentiate.',
+        'Conformal coverage guarantee holds only under valid calibration and exchangeability assumptions.',
+      ]
+      break
+  }
+
+  // Use the real pure safety policy function to evaluate the prediction set and scores
+  const policyResult = evaluateSafetyPolicy(predictionSet, scores)
+
+  return {
+    case_id: caseId,
+    status: 'completed',
+    mode: 'simulated',
+    simulated: true,
+    timestamp,
+    model: {
+      name: 'DenseNet-121-CXR-v1.0 (Simulated)',
+      scores,
+      calibrated: false,
+    },
+    conformal: {
+      prediction_set: predictionSet,
+      target_coverage: 0.95,
+      method: 'split_conformal_lac',
+    },
+    safety_policy: {
+      version: policyResult.policyVersion,
+      abstained: policyResult.abstained,
+      triggered_rules: policyResult.triggeredRules,
+      reasons: policyResult.reasons,
+    },
+    triage: policyResult.triage,
+    explainability: {
+      available: true,
+      method: 'gradcam',
+      heatmap_png_base64: heatmapBase64,
+      note: 'Illustrative placeholder, not derived from your image.',
+    },
+    limitations,
   }
 }
 
 /**
- * Simulates network delay and returns a simulated response
+ * Simulates pipeline execution delay and returns deterministic response
  */
 export async function simulateAnalysis(
   scenario: TriageOutcome,
   caseLabel?: string,
   abortSignal?: AbortSignal
 ): Promise<AnalysisResponse> {
-  const simulatedDelayMs = 1200 // realistic pipeline delay
+  const simulatedDelayMs = 900 // Stage progression duration
 
   return new Promise<AnalysisResponse>((resolve, reject) => {
     const timer = setTimeout(() => {
@@ -313,3 +238,4 @@ export async function simulateAnalysis(
     }
   })
 }
+

@@ -151,6 +151,11 @@ export const GradCamViewer: React.FC<GradCamViewerProps> = ({
                   className="w-full h-full object-contain absolute inset-0 z-10 transition-opacity mix-blend-screen"
                 />
               )}
+              {isSimulated && (
+                <div className="absolute bottom-2 inset-x-2 z-20 text-center py-0.5 px-2 rounded bg-slate-950/90 border border-amber-400/50 text-[10px] font-medium text-amber-300">
+                  Illustrative placeholder, not derived from your image.
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -176,6 +181,11 @@ export const GradCamViewer: React.FC<GradCamViewerProps> = ({
                 className="w-full h-full object-contain absolute inset-0 z-10 transition-opacity mix-blend-screen"
               />
             )}
+            {isSimulated && (
+              <div className="absolute bottom-2 inset-x-2 z-20 text-center py-0.5 px-2 rounded bg-slate-950/90 border border-amber-400/50 text-[10px] font-medium text-amber-300">
+                Illustrative placeholder, not derived from your image.
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -190,10 +200,10 @@ export const GradCamViewer: React.FC<GradCamViewerProps> = ({
         </div>
 
         {isSimulated && (
-          <div className="flex items-start space-x-2 text-amber-800 bg-amber-50 p-2.5 rounded border border-amber-200">
+          <div className="flex items-start space-x-2 text-amber-900 bg-amber-50 p-2.5 rounded border border-amber-200">
             <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <p>
-              <strong>Simulated Demonstration:</strong> {explainability.note || 'Illustrative placeholder, not derived from the uploaded image.'}
+              <strong>Simulated Demonstration:</strong> {explainability.note || 'Illustrative placeholder, not derived from your image.'}
             </p>
           </div>
         )}
