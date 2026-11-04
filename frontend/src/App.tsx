@@ -6,7 +6,6 @@ import { DemoModeBanner } from './components/layout/DemoModeBanner'
 import { Footer } from './components/layout/Footer'
 import { Landing } from './pages/Landing'
 import { Workspace } from './pages/Workspace'
-import { SafetyEngine } from './pages/SafetyEngine'
 import { Evaluation } from './pages/Evaluation'
 
 export const App: React.FC = () => {
@@ -25,8 +24,8 @@ export const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/workspace" element={<Workspace />} />
-              <Route path="/safety-engine" element={<SafetyEngine />} />
               <Route path="/evaluation" element={<Evaluation />} />
+              <Route path="/safety-engine" element={<Navigate to="/workspace" replace />} />
               {/* Fallback to home */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

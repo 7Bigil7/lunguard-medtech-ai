@@ -4,7 +4,7 @@ import { ArrowRight, X, Sparkles, Bell, User, Search } from 'lucide-react'
 import { useApp } from '../../context/useApp'
 
 export const Header: React.FC = () => {
-  const { mode, enterDemoMode, exitDemoMode, recheckBackend } = useApp()
+  const { mode, recheckBackend } = useApp()
   const location = useLocation()
   const [showAboutModal, setShowAboutModal] = useState(false)
   const [searchVal, setSearchVal] = useState('')
@@ -12,7 +12,6 @@ export const Header: React.FC = () => {
   const navLinks = [
     { to: '/', label: 'Home' },
     { to: '/workspace', label: 'Analysis' },
-    { to: '/safety-engine', label: 'Safety Engine' },
     { to: '/evaluation', label: 'Evaluation' },
   ]
 
@@ -96,24 +95,10 @@ export const Header: React.FC = () => {
 
               {/* Backend Status Pill */}
               {mode === 'live' ? (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse" />
-                  Live Inference
+                  Live Model Connected
                 </span>
-              ) : mode === 'demo' ? (
-                <div className="flex items-center space-x-1.5">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5" />
-                    Simulated Demo
-                  </span>
-                  <button
-                    type="button"
-                    onClick={exitDemoMode}
-                    className="text-[11px] text-slate-500 hover:text-slate-900 underline font-medium cursor-pointer"
-                  >
-                    Exit
-                  </button>
-                </div>
               ) : (
                 <button
                   type="button"
@@ -122,19 +107,7 @@ export const Header: React.FC = () => {
                   className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 transition-colors cursor-pointer"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5" />
-                  Offline (Recheck)
-                </button>
-              )}
-
-              {/* Action Button */}
-              {mode !== 'demo' && (
-                <button
-                  type="button"
-                  onClick={enterDemoMode}
-                  className="text-xs px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold transition-all flex items-center shadow-xs cursor-pointer"
-                >
-                  <span>Demo Mode</span>
-                  <ArrowRight className="w-3 h-3 ml-1 text-slate-400" />
+                  Backend Offline
                 </button>
               )}
 

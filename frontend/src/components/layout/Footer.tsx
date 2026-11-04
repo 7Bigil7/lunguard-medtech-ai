@@ -42,7 +42,7 @@ export const Footer: React.FC = () => {
           {/* Development Team Attribution */}
           <div className="text-center space-y-1">
             <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block">
-              DEXATHON 2026 PROTOTYPE DEVELOPMENT TEAM
+              CLINICAL MEDTECH AI DEVELOPMENT TEAM
             </span>
             <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs font-semibold text-slate-700">
               <span>Bharath</span>

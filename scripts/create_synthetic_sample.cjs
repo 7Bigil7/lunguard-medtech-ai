@@ -62,7 +62,7 @@ function createPng(width, height) {
         val = 90 + Math.floor(60 * (1 - dist));
         // Bilateral lung fields
         const leftLung = Math.hypot(dx + 0.35, dy - 0.05);
-        const rightLung = Math.hypot(dx - 0.35, dy - 0.05);
+        const rightLung = Math.hypot(dx - 0.35, - 0.05);
         if (leftLung < 0.32) {
           val = 70 + Math.floor(30 * (1 - leftLung / 0.32));
         } else if (rightLung < 0.32) {

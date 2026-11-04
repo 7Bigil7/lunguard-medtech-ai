@@ -68,13 +68,13 @@ def validate_image_bytes(raw_bytes: bytes, filename: str = "") -> Tuple[int, int
 
             # Radiograph Plausibility Check 1: Aspect Ratio
             aspect_ratio = float(width) / float(height if height > 0 else 1)
-            if aspect_ratio < 0.50 or aspect_ratio > 1.75:
+            if aspect_ratio < 0.35 or aspect_ratio > 2.50:
                 raise UploadValidationError(
                     status_code=422,
                     code="INVALID_ASPECT_RATIO",
                     message=(
                         f"Image aspect ratio ({aspect_ratio:.2f}) is atypical for chest radiography. "
-                        "Expected standard frontal PA or AP orientation (between 0.50 and 1.75)."
+                        "Expected standard frontal PA or AP orientation (between 0.35 and 2.50)."
                     ),
                 )
 
@@ -92,20 +92,22 @@ def validate_image_bytes(raw_bytes: bytes, filename: str = "") -> Tuple[int, int
                         np.abs(r - g), np.maximum(np.abs(r - b), np.abs(g - b))
                     )
                     mean_color_diff = float(np.mean(channel_diff))
+                    median_color_diff = float(np.median(channel_diff))
 
-                    # Clinical radiographs are monochromatic (or subtle PACS monitor tint <= 25.0)
-                    # Natural color photos (selfies, cars, pets, nature, memes) have mean_color_diff > 25.0
-                    if mean_color_diff > 25.0:
+                    # Clinical radiographs are monochromatic (median color diff ~ 0.0), even if they have
+                    # small colored burned-in markers (like green/yellow "L" or "R" labels).
+                    # Natural color photos (selfies, cars, pets, nature) have median_color_diff > 25.0 and mean > 40.0
+                    if median_color_diff > 25.0 and mean_color_diff > 40.0:
                         raise UploadValidationError(
                             status_code=422,
                             code="NON_RADIOGRAPHIC_IMAGE",
                             message=(
-                                f"Uploaded file appears to be a full-color photograph (color deviation {mean_color_diff:.1f} > 25.0). "
+                                f"Uploaded file appears to be a full-color photograph (color deviation {mean_color_diff:.1f} > 40.0). "
                                 "LUNGUARD strictly requires monochromatic chest radiographs."
                             ),
                         )
 
-            # Radiograph Plausibility Check 3: Reject text documents, sketches, or blank screens
+            # Radiograph Plausibility Check 3: Reject text documents, UI screenshots, mockups, or blank screens
             if mode in ("RGB", "RGBA"):
                 gray_sub = 0.2989 * r + 0.5870 * g + 0.1140 * b
             else:
@@ -114,20 +116,25 @@ def validate_image_bytes(raw_bytes: bytes, filename: str = "") -> Tuple[int, int
                 step = max(1, int(np.sqrt((h * w) / 40000)))
                 gray_sub = arr_gray[::step, ::step].astype(np.float32)
 
-            near_white_pct = float(np.mean(gray_sub > 248))
-            near_black_pct = float(np.mean(gray_sub < 8))
+            mean_brightness = float(np.mean(gray_sub))
+            near_white_pct = float(np.mean(gray_sub > 235))
+            near_black_pct = float(np.mean(gray_sub < 5))
 
-            if near_white_pct > 0.65:
+            # UI mockups, documents, and web screenshots have bright white/light canvas backgrounds (>45% white or mean > 185)
+            if mean_brightness > 185.0 or near_white_pct > 0.45:
                 raise UploadValidationError(
                     status_code=422,
                     code="NON_RADIOGRAPHIC_IMAGE",
-                    message="Uploaded image is predominantly white (text document or sketch detected). LUNGUARD requires chest X-ray radiographs.",
+                    message=(
+                        f"Uploaded image appears to be a graphic mockup, UI screenshot, or document (mean brightness {mean_brightness:.1f}, {near_white_pct * 100:.1f}% white canvas). "
+                        "LungGuard strictly requires diagnostic chest radiographs with anatomical thoracic parenchyma."
+                    ),
                 )
-            if near_black_pct > 0.85:
+            if near_black_pct > 0.94 or mean_brightness < 15.0:
                 raise UploadValidationError(
                     status_code=422,
                     code="NON_RADIOGRAPHIC_IMAGE",
-                    message="Uploaded image is predominantly blank or completely underexposed. LUNGUARD requires diagnostic chest X-ray radiographs.",
+                    message="Uploaded image is predominantly blank or completely underexposed. LungGuard requires diagnostic chest X-ray radiographs.",
                 )
 
     except UploadValidationError:

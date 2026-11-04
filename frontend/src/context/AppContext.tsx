@@ -4,7 +4,6 @@ import { checkBackendHealth } from '../services/apiClient'
 import { AppContext } from './AppContextInstance'
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const envDemo = import.meta.env.VITE_DEMO_MODE === 'true'
   // Start directly in demo mode unless live backend is detected
   const [mode, setMode] = useState<AppMode>('demo')
   const [health, setHealth] = useState<HealthResponse | null>(null)
@@ -21,7 +20,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (data.model_loaded && data.mode === 'inference') {
         setMode('live')
       } else {
-        // Backend reached but not loaded for inference: stay in demo mode
         setMode('demo')
         setHealthError('Backend is active but model inference worker is offline. Remaining in Simulated Demo Mode.')
       }
@@ -29,7 +27,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setHealth(null)
       const msg = err instanceof Error ? err.message : 'Backend unreachable'
       setHealthError(msg)
-      // When backend is unreachable, stay directly in clearly labeled SIMULATED DEMO MODE
       setMode('demo')
     } finally {
       setIsCheckingHealth(false)
@@ -37,14 +34,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [])
 
   useEffect(() => {
-    if (!envDemo) {
-      // Opportunistically check if a live backend is reachable without dead-ending
-      const timer = setTimeout(() => {
-        verifyBackend()
-      }, 0)
-      return () => clearTimeout(timer)
-    }
-  }, [envDemo, verifyBackend])
+    verifyBackend()
+    // Periodic heartbeat every 2.5s to automatically detect when FastAPI backend comes online
+    const interval = setInterval(() => {
+      verifyBackend()
+    }, 2500)
+    return () => clearInterval(interval)
+  }, [verifyBackend])
 
   const enterDemoMode = useCallback(() => {
     setMode('demo')

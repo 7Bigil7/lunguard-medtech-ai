@@ -39,17 +39,14 @@ export const Workspace: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
 
-  // Clean up object URLs
+  // Clean up in-flight requests only when component unmounts
   useEffect(() => {
     return () => {
-      if (activeImageObjectUrl) {
-        URL.revokeObjectURL(activeImageObjectUrl)
-      }
       if (abortControllerRef.current) {
         abortControllerRef.current.abort()
       }
     }
-  }, [activeImageObjectUrl])
+  }, [])
 
   const handleReset = () => {
     if (abortControllerRef.current) {
@@ -83,8 +80,10 @@ export const Workspace: React.FC = () => {
       setValidationError(null)
       setAnalysisResult(null)
 
-      const newUrl = URL.createObjectURL(file)
-      setActiveImageObjectUrl(newUrl)
+      setActiveImageObjectUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev)
+        return URL.createObjectURL(file)
+      })
       setActiveFile(file)
       setActiveCaseLabel(caseLabel)
 
@@ -92,13 +91,23 @@ export const Workspace: React.FC = () => {
       abortControllerRef.current = controller
 
       try {
-        if (mode === 'demo') {
-          const result = await simulateAnalysis(simulatedScenario, caseLabel, controller.signal)
-          setAnalysisResult(result)
-        } else {
-          const result = await analyzeImageLive(file, caseLabel, controller.signal)
-          setAnalysisResult(result)
+        let result: AnalysisResponse
+        try {
+          // Always attempt live DenseNet-121 inference on FastAPI backend
+          result = await analyzeImageLive(file, caseLabel, controller.signal)
+        } catch (liveErr) {
+          // If live model is unreachable or user explicitly in demo mode, fall back to simulation
+          if (
+            liveErr instanceof ApiServiceError &&
+            liveErr.code === 'NETWORK_ERROR' &&
+            mode === 'demo'
+          ) {
+            result = await simulateAnalysis(simulatedScenario, caseLabel, controller.signal)
+          } else {
+            throw liveErr
+          }
         }
+        setAnalysisResult(result)
       } catch (err: unknown) {
         if (err instanceof DOMException && err.name === 'AbortError') {
           setIsAnalyzing(false)
@@ -137,6 +146,15 @@ export const Workspace: React.FC = () => {
     }
   }
 
+  const handleDroppedFile = async (file: File) => {
+    const val = await validateCxrImage(file)
+    if (!val.valid) {
+      setValidationError(val.error.message)
+      return
+    }
+    runAnalysis(val.file)
+  }
+
   const loadSampleCxr = async () => {
     try {
       const res = await fetch('/hero-cxr.jpg')
@@ -145,6 +163,14 @@ export const Workspace: React.FC = () => {
       runAnalysis(sampleFile, 'SAMPLE-CXR-01')
     } catch {
       setValidationError('Failed to load synthetic sample X-ray.')
+    }
+  }
+
+  const handleRetryAnalysis = () => {
+    if (activeFile) {
+      runAnalysis(activeFile, activeCaseLabel)
+    } else {
+      loadSampleCxr()
     }
   }
 
@@ -180,11 +206,7 @@ export const Workspace: React.FC = () => {
           <NeutralErrorAlert
             code={apiError.code}
             message={apiError.message}
-            onRetry={() => {
-              if (activeFile) {
-                runAnalysis(activeFile, activeCaseLabel)
-              }
-            }}
+            onRetry={handleRetryAnalysis}
             onDismiss={() => setApiError(null)}
           />
         )}
@@ -205,8 +227,12 @@ export const Workspace: React.FC = () => {
             response={analysisResult}
             activeImageSrc={activeImageObjectUrl}
             isAnalyzing={isAnalyzing}
+            errorMessage={validationError || (apiError ? apiError.message : null)}
             onUploadNew={() => fileInputRef.current?.click()}
             onSelectSample={loadSampleCxr}
+            onFileDrop={handleDroppedFile}
+            onReset={handleReset}
+            onRetry={handleRetryAnalysis}
           />
         </section>
 
