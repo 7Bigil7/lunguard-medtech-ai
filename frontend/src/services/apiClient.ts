@@ -21,7 +21,13 @@ const DEFAULT_TIMEOUT_MS = 25000 // 25s timeout for deep learning inference
 const HEALTH_TIMEOUT_MS = 4000 // 4s timeout for health probe
 
 export function getApiBaseUrl(): string {
-  return import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL
+  }
+  if (typeof window !== 'undefined' && window.location.hostname) {
+    return `${window.location.protocol}//${window.location.hostname}:8000`
+  }
+  return 'http://localhost:8000'
 }
 
 /**

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUNGUARD MedTech AI — Architecture & Pipeline Visualizer</title>
+  <!-- Mermaid.js for interactive diagram rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .mermaid {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    }
+  </style>
+</head>
+<body class="p-6 md:p-12 text-slate-900 max-w-6xl mx-auto">
+  <!-- Header -->
+  <header class="mb-10 text-center">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-semibold uppercase tracking-wider mb-3">
+      Jury Defense Visualizer
+    </div>
+    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
+      LUNGUARD v2.0 Architecture & Clinical Safety Pipeline
+    </h1>
+    <p class="text-slate-600 mt-2 text-base md:text-lg max-w-2xl mx-auto">
+      Zero-Trust Radiograph Guardian, TorchXRayVision DenseNet-121, Conformal Risk Bounding & Deterministic TrustGuard Engine.
+    </p>
+  </header>
+
+  <!-- Section 1 -->
+  <section class="mb-12">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 class="text-xl font-bold text-slate-800">1. High-Level End-to-End System Architecture</h2>
+        <p class="text-sm text-slate-500">Separation of concerns across Client, Gateway, ML Core, and Safety Engine.</p>
+      </div>
+    </div>
+    <div class="mermaid">
+graph TD
+    subgraph Client ["Client Layer (React 19 + TypeScript + Tailwind CSS)"]
+        UI["Minimal Clinical Dashboard<br/>(Radiograph Card, Reliability 86%, Top Findings)"]
+        CanvasQC["Client-Side Pixel Quality Engine<br/>(HTML5 Canvas, Aspect Ratio, RGB Saturation)"]
+        ClientVal["Zero-Trust File Validator<br/>(In-Memory Magic-Byte Inspection)"]
+    end
+
+    subgraph Gateway ["API & Intake Gateway (FastAPI Async ASGI)"]
+        Endpoint["POST /api/analyze<br/>(Direct In-Memory Streaming, 0 Disk Writes)"]
+        MemoryGuard["In-Memory Binary Validator<br/>(Magic Bytes, Size Cap 10MB)"]
+        RadioGuard["Radiograph Plausibility Guardian<br/>(RGB Variance &le; 25.0, Document / Aspect Filter)"]
+    end
+
+    subgraph MLEngine ["Clinical ML Core (TorchXRayVision)"]
+        Preprocessor["Radiological Preprocessing<br/>(Min-Max Normalization, Rescale [-1024, 1024])"]
+        DenseNet["DenseNet-121 Backbone<br/>(18 Multi-Label Sigmoid Heads: TB, Nodule, Mass, etc.)"]
+        PerturbTester["Monte Carlo Perturbation Stability<br/>(Jitter, Contrast Shift, Variance Metric)"]
+        GradCAM["Grad-CAM XAI Engine<br/>(Dense Block 4 Attention Activation Mapping)"]
+    end
+
+    subgraph TrustGuardEngine ["TrustGuard Safety & Uncertainty Engine"]
+        Conformal["Split Conformal Prediction Engine<br/>(1 - &alpha; = 90% Statistical Coverage Guarantee)"]
+        RuleFirewall["TrustGuard 8-Rule Deterministic Firewall<br/>(Empty Set Abstention, Dual-Risk Collision, Quality Gate)"]
+        TrustPassport["Unified Trust Passport Generator<br/>(Reliability Score, Triage Route, Clinical Rationale)"]
+    end
+
+    UI --> ClientVal --> CanvasQC --> Endpoint
+    Endpoint --> MemoryGuard --> RadioGuard
+    RadioGuard -->|Valid Chest Radiograph| Preprocessor
+    RadioGuard -->|Photo / Car / Pet / Document| Reject[HTTP 422: NON_RADIOGRAPHIC_IMAGE]
+    Preprocessor --> DenseNet
+    DenseNet --> PerturbTester & GradCAM & Conformal
+    Conformal & PerturbTester --> RuleFirewall
+    RuleFirewall --> TrustPassport
+    TrustPassport --> UI
+
+    style Reject fill:#fee2e2,stroke:#ef4444,stroke-width:2px;
+    style TrustPassport fill:#dcfce7,stroke:#22c55e,stroke-width:2px;
+    style DenseNet fill:#f1f5f9,stroke:#0f172a,stroke-width:2px;
+    </div>
+  </section>
+
+  <!-- Section 2 -->
+  <section class="mb-12">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 class="text-xl font-bold text-slate-800">2. Detailed 6-Stage Inference & Clinical Safety Sequence</h2>
+        <p class="text-sm text-slate-500">Live operational dataflow from image upload to clinical triage decision.</p>
+      </div>
+    </div>
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Clinician as Radiologist / Clinician
+    participant UI as LUNGUARD Frontend
+    participant Gate as Zero-Trust Guardian
+    participant Model as DenseNet-121 Vision Core
+    participant CP as Conformal Risk Quantifier
+    participant Safety as TrustGuard Deterministic Engine
+
+    Clinician->>UI: Uploads Chest X-Ray DICOM / PNG / JPEG
+    UI->>Gate: Stream image in-memory to POST /api/analyze
+    Note over Gate: Checks Magic Bytes (89PNG / FFD8FF)<br/>Verifies aspect ratio (0.50 - 1.75)<br/>Checks channel variance (dev &le; 25.0)
+    alt Non-Radiographic (Selfie, Car, Document)
+        Gate-->>UI: Reject HTTP 422: NON_RADIOGRAPHIC_IMAGE
+        UI-->>Clinician: Error alert: Non-radiographic file rejected
+    else Legitimate CXR Image
+        Gate->>Model: Normalized Tensor [-1024, 1024], 1x1x224x224
+        Model->>Model: Compute 18 Pathology Logits & Independent Sigmoids
+        Model->>CP: Output uncalibrated probabilities P(Y_k | X)
+        Note over CP: Computes Conformal Prediction Set C(X)<br/>with 90% statistical coverage: P(Y in C(X)) &ge; 0.90
+        CP->>Safety: Prediction Set C(X) + Raw Scores + Perturbation Delta
+        Note over Safety: Evaluates 8 Deterministic Clinical Safety Rules:<br/>1. Empty Set (Model Uncertain)<br/>2. Dual-Risk Collision (TB + Malignancy)<br/>3. Stability Disagreement > 0.15<br/>4. Image Quality Suboptimal
+        Safety-->>UI: Trust Passport: Triage Decision + Reliability % + Grad-CAM Heatmap
+        UI-->>Clinician: Renders Modern Clinical Dashboard (86% Reliability, Top Findings)
+    end
+    </div>
+  </section>
+
+  <footer class="text-center text-xs text-slate-400 py-6 border-t border-slate-200">
+    LUNGUARD Medical AI Prototype &bull; Uncertainty-Aware Clinical Decision Support
+  </footer>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'neutral',
+      themeVariables: {
+        fontFamily: 'Inter, system-ui, sans-serif',
+        primaryColor: '#f1f5f9',
+        primaryBorderColor: '#cbd5e1',
+        lineColor: '#64748b'
+      }
+    });
+  </script>
+</body>
+</html>
+

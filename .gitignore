@@ -44,3 +44,9 @@ coverage/
 
 # Office temp lock files
 ~$*
+
+# Cached PyTorch / TorchXRayVision weights
+backend/artifacts/models_data/*.pt
+__pycache__/
+*.pyc
+.pytest_cache/

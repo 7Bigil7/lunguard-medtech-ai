@@ -1,63 +1,70 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { ArrowRight, X } from 'lucide-react'
+import { ArrowRight, X, Sparkles, Bell, User, Search } from 'lucide-react'
 import { useApp } from '../../context/useApp'
-import { LungIcon } from '../common/LungIcon'
 
 export const Header: React.FC = () => {
   const { mode, enterDemoMode, exitDemoMode, recheckBackend } = useApp()
   const location = useLocation()
   const [showAboutModal, setShowAboutModal] = useState(false)
+  const [searchVal, setSearchVal] = useState('')
 
   const navLinks = [
     { to: '/', label: 'Home' },
-    { to: '/workspace', label: 'Analysis Workspace' },
+    { to: '/workspace', label: 'Analysis' },
     { to: '/safety-engine', label: 'Safety Engine' },
     { to: '/evaluation', label: 'Evaluation' },
   ]
 
   return (
     <>
-      <header className="bg-slate-950/95 border-b border-slate-800 text-white sticky top-0 z-40 select-none backdrop-blur-md">
+      <header className="bg-white/90 backdrop-blur-md border-b border-slate-200/80 text-slate-800 sticky top-0 z-40 select-none shadow-2xs transition-colors font-sans">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-16 gap-4">
             {/* Brand Wordmark & Lungs Icon */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 shrink-0">
               <Link
                 to="/"
-                className="flex items-center space-x-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-md"
+                className="flex items-center space-x-2.5 group focus:outline-none"
               >
-                <div className="w-9 h-9 rounded-xl bg-slate-900 border border-cyan-500/30 flex items-center justify-center text-white shadow-sm group-hover:border-cyan-400 transition-colors">
-                  <LungIcon className="w-6 h-6" />
+                <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold shadow-xs">
+                  <svg
+                    className="w-5 h-5 text-teal-400"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 4v16" />
+                    <path d="M6 8a4 4 0 0 0-4 4v2a6 6 0 0 0 6 6h1a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H8a4 4 0 0 0-2 4Z" />
+                    <path d="M18 8a4 4 0 0 1 4 4v2a6 6 0 0 1-6 6h-1a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h1a4 4 0 0 1 2 4Z" />
+                  </svg>
                 </div>
-                <div>
-                  <div className="flex items-center space-x-1.5">
-                    <span className="font-extrabold tracking-tight text-lg text-white font-sans">
-                      LUNGUARD
-                    </span>
-                    <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-full bg-cyan-950/70 text-cyan-300 border border-cyan-600/50">
-                      CXR TRIAGE
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-slate-400 leading-none">
-                    Uncertainty-Aware Clinical Decision Support
-                  </div>
+                <div className="flex items-center space-x-2">
+                  <span className="font-extrabold tracking-tight text-xl text-slate-900">
+                    LungGuard
+                  </span>
+                  <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                    MedTech AI
+                  </span>
                 </div>
               </Link>
             </div>
 
-            {/* Nav links */}
-            <nav className="hidden lg:flex items-center space-x-1" aria-label="Main Navigation">
+            {/* Center Pill Navigation */}
+            <nav className="hidden md:flex items-center space-x-1 bg-slate-100/90 p-1 rounded-full border border-slate-200/60" aria-label="Main Navigation">
               {navLinks.map((link) => {
                 const isActive = location.pathname === link.to
                 return (
                   <Link
                     key={link.to}
                     to={link.to}
-                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
                       isActive
-                        ? 'text-cyan-300 font-semibold border-b-2 border-cyan-400 rounded-none'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                        ? 'bg-slate-900 text-white shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
                     }`}
                   >
                     {link.label}
@@ -67,70 +74,100 @@ export const Header: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowAboutModal(true)}
-                className="px-3 py-1.5 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/80 transition-all cursor-pointer"
               >
                 About
               </button>
             </nav>
 
-            {/* Right Status Badge & Primary CTA */}
-            <div className="flex items-center space-x-2.5">
+            {/* Right Status Badge & Profile Utilities */}
+            <div className="flex items-center space-x-2.5 shrink-0">
+              {/* Quick Search */}
+              <div className="relative hidden xl:block">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchVal}
+                  onChange={(e) => setSearchVal(e.target.value)}
+                  placeholder="Search..."
+                  className="pl-8 pr-3 py-1.5 text-xs rounded-full bg-slate-100 border border-transparent focus:border-slate-300 focus:bg-white text-slate-800 placeholder-slate-400 w-36 focus:outline-none transition-all"
+                />
+              </div>
+
               {/* Backend Status Pill */}
               {mode === 'live' ? (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-600/50">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse" />
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse" />
                   Live Inference
                 </span>
               ) : mode === 'demo' ? (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-400/90 text-slate-950 shadow-xs">
-                  <span className="w-2 h-2 rounded-full bg-slate-950 mr-1.5" />
-                  Demo Mode
-                </span>
-              ) : (
                 <div className="flex items-center space-x-1.5">
-                  <span
-                    onClick={() => recheckBackend()}
-                    title="FastAPI backend is offline. Click to recheck."
-                    className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-900 text-slate-300 border border-slate-700/80 cursor-pointer hover:border-slate-600 transition-colors"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-amber-400 mr-2" />
-                    Backend Offline
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5" />
+                    Simulated Demo
                   </span>
+                  <button
+                    type="button"
+                    onClick={exitDemoMode}
+                    className="text-[11px] text-slate-500 hover:text-slate-900 underline font-medium cursor-pointer"
+                  >
+                    Exit
+                  </button>
                 </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => recheckBackend()}
+                  title="Backend is offline. Click to recheck."
+                  className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 transition-colors cursor-pointer"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5" />
+                  Offline (Recheck)
+                </button>
               )}
 
               {/* Action Button */}
-              {mode === 'demo' ? (
-                <button
-                  type="button"
-                  onClick={exitDemoMode}
-                  className="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-300 transition-colors"
-                >
-                  Exit Demo
-                </button>
-              ) : (
+              {mode !== 'demo' && (
                 <button
                   type="button"
                   onClick={enterDemoMode}
-                  className="text-xs px-3.5 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold transition-all flex items-center shadow-md shadow-cyan-950/40"
+                  className="text-xs px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold transition-all flex items-center shadow-xs cursor-pointer"
                 >
-                  <span>Enter Simulated Demo Mode</span>
-                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                  <span>Demo Mode</span>
+                  <ArrowRight className="w-3 h-3 ml-1 text-slate-400" />
                 </button>
               )}
+
+              {/* Notifications */}
+              <button
+                type="button"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+                title="Notifications"
+              >
+                <Bell className="w-4 h-4" />
+              </button>
+
+              {/* Profile Avatar */}
+              <button
+                type="button"
+                className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-700 hover:bg-slate-300 transition-colors cursor-pointer"
+                title="Profile"
+              >
+                <User className="w-4 h-4" />
+              </button>
             </div>
           </div>
 
           {/* Mobile Navigation bar */}
-          <div className="lg:hidden flex items-center space-x-1 py-2 border-t border-slate-800/80 overflow-x-auto">
+          <div className="md:hidden flex items-center space-x-1 py-2 border-t border-slate-200 overflow-x-auto">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.to
               return (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`px-2.5 py-1 rounded text-xs font-medium whitespace-nowrap ${
-                    isActive ? 'bg-slate-800 text-cyan-300' : 'text-slate-300'
+                  className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
+                    isActive ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   {link.label}
@@ -140,7 +177,7 @@ export const Header: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowAboutModal(true)}
-              className="px-2.5 py-1 rounded text-xs font-medium text-slate-300 whitespace-nowrap"
+              className="px-3 py-1 rounded-full text-xs font-semibold text-slate-600 whitespace-nowrap"
             >
               About
             </button>
@@ -153,37 +190,56 @@ export const Header: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm"
         >
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-slate-200">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <div className="flex items-center space-x-2">
-                <LungIcon className="w-6 h-6" />
-                <h3 className="font-bold text-white text-base">About LUNGUARD</h3>
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl text-slate-700 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white">
+                  <svg
+                    className="w-5 h-5 text-teal-400"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 4v16" />
+                    <path d="M6 8a4 4 0 0 0-4 4v2a6 6 0 0 0 6 6h1a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H8a4 4 0 0 0-2 4Z" />
+                    <path d="M18 8a4 4 0 0 1 4 4v2a6 6 0 0 1-6 6h-1a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h1a4 4 0 0 1 2 4Z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-extrabold text-slate-900">About LungGuard</h3>
+                  <p className="text-xs text-slate-500">Uncertainty-Aware CXR Triage Platform</p>
+                </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowAboutModal(false)}
-                className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-                aria-label="Close About dialog"
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-3 text-xs leading-relaxed text-slate-300">
+            <div className="space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
               <p>
-                <strong>LUNGUARD</strong> is an uncertainty-aware chest X-ray decision-support prototype built for <strong>DEXATHON 2026</strong> (Round 2 Prototype Submission).
+                <strong>LungGuard</strong> is an uncertainty-aware chest radiograph triage platform. It tackles diagnostic anchoring between Tuberculosis and Pulmonary Malignancy on plain chest radiographs.
               </p>
-              <p>
-                The platform addresses the critical challenge of <strong>diagnostic anchoring</strong> in tuberculosis-endemic regions such as India, where active/healed tuberculosis and pulmonary malignancy frequently present with overlapping radiological patterns.
-              </p>
-              <div className="p-3 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 space-y-1">
-                <span className="font-semibold text-white block">Project Team:</span>
-                <p>Bharath, Vivek, Harshitha, Ananya, Srishant</p>
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-slate-900">
+                <div className="font-bold flex items-center space-x-1.5 text-xs text-slate-800 uppercase tracking-wide">
+                  <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Key Innovation</span>
+                </div>
+                <p className="text-xs text-slate-700">
+                  Instead of forcing overconfident point classifications, LungGuard produces <strong>Conformal Prediction Sets</strong> with statistical coverage guarantees and enforces a deterministic <strong>TrustGuard Safety Firewall</strong> that abstains when findings are ambiguous.
+                </p>
               </div>
-              <p className="text-[11px] text-slate-400">
-                Research Prototype Notice: This software is intended for research demonstration and decision-support exploration only. It is not an approved medical device.
+              <p className="text-xs text-slate-500">
+                ⚠️ <strong>Clinical Notice:</strong> This software is a research prototype, not a CDSCO/FDA cleared medical device. No real clinical decisions should be made with this software.
               </p>
             </div>
 
@@ -191,7 +247,7 @@ export const Header: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowAboutModal(false)}
-                className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs"
+                className="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors cursor-pointer"
               >
                 Close
               </button>

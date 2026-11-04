@@ -13,7 +13,7 @@ export const App: React.FC = () => {
   return (
     <AppProvider>
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans selection:bg-teal-100 selection:text-teal-900">
+        <div className="min-h-screen flex flex-col bg-[#f8f9fa] text-slate-900 font-sans selection:bg-slate-200 selection:text-slate-900">
           {/* Global Mode Banner */}
           <DemoModeBanner />
 

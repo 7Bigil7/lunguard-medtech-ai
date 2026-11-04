@@ -23,6 +23,9 @@ export const ModelMetadataSchema = z.object({
   name: z.string(),
   scores: ModelOutputScoresSchema,
   calibrated: z.boolean(),
+  version: z.string().optional(),
+  device: z.string().optional(),
+  score_type: z.string().optional(),
 })
 
 export const ConformalPredictionSchema = z.object({
@@ -57,6 +60,43 @@ export const AnalysisResponseSchema = z.object({
   triage: TriageOutcomeSchema,
   explainability: ExplainabilitySchema,
   limitations: z.array(z.string()),
+  // Optional LUNGGUARD v2.0 Trust Passport fields (populated during live DenseNet-121 inference)
+  analysis_id: z.string().optional(),
+  processing_time_ms: z.number().optional(),
+  predictions: z.record(z.string(), z.number()).optional(),
+  top_findings: z.array(z.object({ label: z.string(), score: z.number() })).optional(),
+  image_quality: z
+    .object({
+      status: z.enum(['acceptable', 'suboptimal', 'inadequate']),
+      brightness: z.number(),
+      contrast: z.number(),
+      blur_score: z.number(),
+      dynamic_range: z.number(),
+      dimensions: z.object({ width: z.number(), height: z.number() }),
+      warnings: z.array(z.string()),
+      review_recommended: z.boolean(),
+    })
+    .optional(),
+  stability: z
+    .object({
+      status: z.enum(['stable', 'moderate_instability', 'unstable', 'skipped']),
+      tests_run: z.number(),
+      score: z.number().nullable().optional(),
+      mean_score_variation: z.number().nullable().optional(),
+      max_score_delta: z.number().nullable().optional(),
+      disagreement_rate: z.number().nullable().optional(),
+    })
+    .optional(),
+  trustguard: z
+    .object({
+      decision: z.enum(['unreliable_input', 'review_recommended', 'standard_triage']),
+      priority_rule: z.string(),
+      triggered_rules: z.array(z.string()),
+      reasons: z.array(z.string()),
+      safe_for_automated_clearance: z.boolean(),
+      clinical_disclaimer: z.string(),
+    })
+    .optional(),
 })
 
 export const HealthResponseSchema = z.object({
@@ -66,22 +106,13 @@ export const HealthResponseSchema = z.object({
   model_name: z.string().nullable(),
   policy_version: z.string().nullable(),
   version: z.string(),
+  device: z.string().optional(),
 })
 
 export const ApiErrorPayloadSchema = z.object({
   status: z.literal('error'),
   error: z.object({
-    code: z.enum([
-      'INVALID_FILE_TYPE',
-      'FILE_TOO_LARGE',
-      'CORRUPT_IMAGE',
-      'IMAGE_TOO_SMALL',
-      'MODEL_UNAVAILABLE',
-      'INFERENCE_FAILED',
-      'INTERNAL_ERROR',
-      'NETWORK_ERROR',
-      'SCHEMA_ERROR',
-    ]),
+    code: z.string(),
     message: z.string(),
   }),
 })
