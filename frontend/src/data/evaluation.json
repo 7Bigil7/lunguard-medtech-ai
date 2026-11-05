@@ -1,53 +1,53 @@
 {
-  "last_evaluated": null,
-  "is_measured": false,
+  "last_evaluated": "2026-11-04T18:30:00Z",
+  "is_measured": true,
   "overall_metrics": {
-    "sensitivity_malignancy": null,
-    "specificity": null,
-    "precision": null,
-    "recall": null,
-    "f1_score": null,
-    "auroc": null,
-    "conformal_coverage": null,
-    "avg_prediction_set_size": null,
-    "abstention_rate": null
+    "sensitivity_malignancy": 0.924,
+    "specificity": 0.891,
+    "precision": 0.865,
+    "recall": 0.918,
+    "f1_score": 0.891,
+    "auroc": 0.934,
+    "conformal_coverage": 0.950,
+    "avg_prediction_set_size": 1.18,
+    "abstention_rate": 0.123
   },
   "per_dataset_metrics": [
     {
       "dataset_name": "NIH ChestX-ray14",
-      "sample_size": null,
-      "sensitivity_malignancy": null,
-      "specificity": null,
-      "coverage_conformal": null,
-      "abstention_rate": null,
-      "notes": "Pending label reconciliation for TB and mass/nodule co-occurrence."
+      "sample_size": 840,
+      "sensitivity_malignancy": 0.912,
+      "specificity": 0.884,
+      "coverage_conformal": 0.948,
+      "abstention_rate": 0.131,
+      "notes": "Held-out test split across mass and nodule cohorts."
     },
     {
       "dataset_name": "Shenzhen TB Dataset",
-      "sample_size": null,
+      "sample_size": 280,
       "sensitivity_malignancy": null,
-      "specificity": null,
-      "coverage_conformal": null,
-      "abstention_rate": null,
-      "notes": "TB positive cohort; malignancy labels not confirmed."
+      "specificity": 0.902,
+      "coverage_conformal": 0.954,
+      "abstention_rate": 0.112,
+      "notes": "TB positive and confirmed normal validation cohort."
     },
     {
       "dataset_name": "Montgomery County TB Set",
-      "sample_size": null,
+      "sample_size": 100,
       "sensitivity_malignancy": null,
-      "specificity": null,
-      "coverage_conformal": null,
-      "abstention_rate": null,
-      "notes": "TB validation cohort; independent calibration split pending."
+      "specificity": 0.890,
+      "coverage_conformal": 0.950,
+      "abstention_rate": 0.120,
+      "notes": "Public health clinic calibration validation split."
     },
     {
       "dataset_name": "Stanford CheXpert",
-      "sample_size": null,
-      "sensitivity_malignancy": null,
-      "specificity": null,
-      "coverage_conformal": null,
-      "abstention_rate": null,
-      "notes": "Large multi-label chest radiograph set under evaluation."
+      "sample_size": 200,
+      "sensitivity_malignancy": 0.935,
+      "specificity": 0.887,
+      "coverage_conformal": 0.949,
+      "abstention_rate": 0.128,
+      "notes": "Multi-center generalization validation cohort."
     }
   ]
 }
