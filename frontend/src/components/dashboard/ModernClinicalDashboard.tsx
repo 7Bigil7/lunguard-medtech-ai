@@ -624,23 +624,23 @@ export const ModernClinicalDashboard: React.FC<ModernClinicalDashboardProps> = (
               )}
             </div>
 
-            {/* Differential Scores Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Differential Scores Grid: 2-Card Head-to-Head (TB vs. Lung Cancer) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* TB Consistent Differential */}
-              <div className="p-3.5 rounded-xl bg-amber-50/50 border border-amber-200/70 space-y-2">
+              <div className="p-4 rounded-xl bg-amber-50/60 border border-amber-200/80 space-y-2.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-amber-900">Tuberculosis (TB)</span>
-                  <span className="font-mono font-extrabold text-amber-900 text-sm">
+                  <span className="font-bold text-amber-900 text-sm">Tuberculosis (TB)</span>
+                  <span className="font-mono font-extrabold text-amber-900 text-base">
                     {tbPct !== null ? `${tbPct}%` : '— %'}
                   </span>
                 </div>
-                <div className="w-full h-2.5 rounded-full bg-amber-100 overflow-hidden">
+                <div className="w-full h-3 rounded-full bg-amber-100 overflow-hidden">
                   <div
                     className="h-full bg-amber-600 rounded-full transition-all duration-700 ease-out"
                     style={{ width: `${tbPct ?? 0}%` }}
                   />
                 </div>
-                <div className="text-[10px] text-amber-800/80 font-medium">
+                <div className="text-[11px] text-amber-800/80 font-medium">
                   {response ? (
                     <span>
                       Infiltration ({tbFindings.find((f) => f.label === 'Infiltration')?.score.toFixed(2) ?? '0.00'}) •
@@ -653,20 +653,20 @@ export const ModernClinicalDashboard: React.FC<ModernClinicalDashboardProps> = (
               </div>
 
               {/* Lung Cancer / Malignancy Differential */}
-              <div className="p-3.5 rounded-xl bg-rose-50/50 border border-rose-200/70 space-y-2">
+              <div className="p-4 rounded-xl bg-rose-50/60 border border-rose-200/80 space-y-2.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-rose-900">Lung Cancer (Malignancy)</span>
-                  <span className="font-mono font-extrabold text-rose-900 text-sm">
+                  <span className="font-bold text-rose-900 text-sm">Lung Cancer (Malignancy)</span>
+                  <span className="font-mono font-extrabold text-rose-900 text-base">
                     {malPct !== null ? `${malPct}%` : '— %'}
                   </span>
                 </div>
-                <div className="w-full h-2.5 rounded-full bg-rose-100 overflow-hidden">
+                <div className="w-full h-3 rounded-full bg-rose-100 overflow-hidden">
                   <div
                     className="h-full bg-rose-600 rounded-full transition-all duration-700 ease-out"
                     style={{ width: `${malPct ?? 0}%` }}
                   />
                 </div>
-                <div className="text-[10px] text-rose-800/80 font-medium">
+                <div className="text-[11px] text-rose-800/80 font-medium">
                   {response ? (
                     <span>
                       Mass ({malFindings.find((f) => f.label === 'Mass')?.score.toFixed(2) ?? '0.00'}) •
@@ -675,25 +675,6 @@ export const ModernClinicalDashboard: React.FC<ModernClinicalDashboardProps> = (
                   ) : (
                     <span>Mass • Nodule • Lung Lesion</span>
                   )}
-                </div>
-              </div>
-
-              {/* Normal Lung Fields Differential */}
-              <div className="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-200/70 space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-emerald-900">Clear Lung Fields</span>
-                  <span className="font-mono font-extrabold text-emerald-900 text-sm">
-                    {normalPct !== null ? `${normalPct}%` : '— %'}
-                  </span>
-                </div>
-                <div className="w-full h-2.5 rounded-full bg-emerald-100 overflow-hidden">
-                  <div
-                    className="h-full bg-emerald-600 rounded-full transition-all duration-700 ease-out"
-                    style={{ width: `${normalPct ?? 0}%` }}
-                  />
-                </div>
-                <div className="text-[10px] text-emerald-800/80 font-medium">
-                  <span>Baseline non-abnormal parenchyma</span>
                 </div>
               </div>
             </div>
