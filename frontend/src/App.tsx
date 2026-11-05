@@ -7,6 +7,7 @@ import { Footer } from './components/layout/Footer'
 import { Landing } from './pages/Landing'
 import { Workspace } from './pages/Workspace'
 import { Evaluation } from './pages/Evaluation'
+import { GuidelinesWindow } from './components/guidelines/GuidelinesWindow'
 
 export const App: React.FC = () => {
   return (
@@ -33,6 +34,9 @@ export const App: React.FC = () => {
 
           {/* Persistent Clinical Footer */}
           <Footer />
+
+          {/* Standards & Guidelines Reference Modal */}
+          <GuidelinesWindow />
         </div>
       </BrowserRouter>
     </AppProvider>
